@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>LCC - Title Slide Generator</title>
+
+  <style>
+    *, *:before, *:after {
+      box-sizing: border-box;
+      font-family: sans-serif;
+    }
+
+    body {
+      background: black;
+      margin: 0;
+    }
+
+    .display {
+      background: black;
+      padding-bottom: 56.25%;
+      position: relative;
+      border: 1px solid gray;
+      width: 100%;
+      flex-grow: 0;
+    }
+
+    .display__canvas {
+      background: white;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+
+    .textfield {
+      border-radius: 3px;
+      border: 1px solid black;
+      background: #292929;
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    .field:last-child {
+      margin-bottom: 0px;
+    }
+
+    .field__label {
+      color: #999999;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      padding-bottom: 2px;
+      display: block;
+    }
+
+    .textfield {
+      color: white;
+      font-size: 16px;
+      padding: 8px;
+      width: 100%;
+    }
+
+    .textfield:focus {
+      border: 1px solid orange;
+      /* box-shadow: 0 0 0 3px rgba(255, 100, 100, 0.4); */
+      outline: 0;
+    }
+
+    .setting-group {
+      border-radius: 3px;
+      padding: 25px;
+    }
+
+    .setting-group:last-child {
+      margin-bottom: 0px;
+    }
+
+    .settings {
+      background: #141414;
+    }
+
+    .screen-container {
+      /* padding: 5px; */
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    @media(min-width: 1000px) {
+      body {
+        overflow: hidden;
+      }
+
+      .screen-container {
+        padding: 15px;
+      }
+
+      .screen {
+        display: flex;
+      }
+
+      .settings {
+        width: 40%;
+        top: 0;
+        height: 100vh;
+        overflow: scroll;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="screen">
+    <div class="screen-container">
+      <div class="display">
+        <canvas class="display__canvas js-canvas" id="stage"></canvas>
+      </div>
+    </div>
+
+    <div class="settings">
+      <section class="setting-group">
+        <div class="field">
+          <label class="field__label" or="">Time</label>
+          <input type="text" class="textfield field__input">
+        </div>
+
+        <div class="field">
+          <label class="field__label" or="">Title</label>
+          <input type="text" class="textfield field__input">
+        </div>
+
+        <div class="field">
+          <label class="field__label" or="">Subtitle</label>
+          <input type="text" class="textfield field__input">
+        </div>
+      </section>
+
+      <section class="setting-group">
+        <div class="field">
+          <label class="field__label" or="">Time</label>
+          <input type="text" class="textfield field__input">
+        </div>
+
+        <div class="field">
+          <label class="field__label" or="">Title</label>
+          <input type="text" class="textfield field__input">
+        </div>
+
+        <div class="field">
+          <label class="field__label" or="">Subtitle</label>
+          <input type="text" class="textfield field__input">
+        </div>
+      </section>
+
+      <section class="setting-group">
+        <div class="field">
+          <label class="field__label" or="">Time</label>
+          <input type="text" class="textfield field__input">
+        </div>
+
+        <div class="field">
+          <label class="field__label" or="">Title</label>
+          <input type="text" class="textfield field__input">
+        </div>
+
+        <div class="field">
+          <label class="field__label" or="">Subtitle</label>
+          <input type="text" class="textfield field__input">
+        </div>
+      </section>
+
+      <section class="setting-group">
+        <div class="field">
+          <label class="field__label" or="">Time</label>
+          <input type="text" class="textfield field__input">
+        </div>
+
+        <div class="field">
+          <label class="field__label" or="">Title</label>
+          <input type="text" class="textfield field__input">
+        </div>
+
+        <div class="field">
+          <label class="field__label" or="">Subtitle</label>
+          <input type="text" class="textfield field__input">
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://code.createjs.com/1.0.0/easeljs.min.js"></script>
+
+  <script>
+    const $canvas = document.querySelector('.js-canvas');
+    const context = $canvas.getContext('2d');
+    const stage = new createjs.Stage('stage');
+
+    const SETTINGS = {
+      titleSizeSmall: 33,
+      titleSizeBig: 35,
+      titleSubtitleGap: 15,
+      eventGap: 30,
+      titleTimeGap: 35,
+      eventsHorizontalPosition: 520,
+      border: 60
+    };
+
+    $canvas.width = 1280 * 3;
+    $canvas.height = 720 * 3;
+
+    stage.scaleX = 3;
+    stage.scaleY = 3;
+
+    // https://github.com/wonderbit/sketch-distribute-layers/blob/master/Distribute.sketchplugin/Contents/Sketch/script.cocoascript
+    function distributeContainersVertically(containers) {
+
+      const objects = [...containers];
+
+      objects.sort((a, b) => {
+        const aBounds = a.getBounds();
+        const bBounds = a.getBounds();
+
+        return aBounds.y - bBounds.y;
+      });
+
+      const totalHeight = objects[objects.length - 1].y + objects[objects.length - 1].getBounds().height - objects[0].y;
+
+      const heights = objects.reduce((mem, object) => {
+        return mem + object.getBounds().height;
+      }, 0);
+
+      const remainingHeight = totalHeight - heights;
+      const space = remainingHeight / (objects.length - 1);
+
+      let y = 0;
+      let left = objects[0].y;
+
+      for(let i=0; i < objects.length; i++) {
+        objects[i].y = y + left;
+        left = objects[i].y + objects[i].getBounds().height + space;
+        objects[i].y = Math.floor(objects[i].y);
+      }
+    };
+
+    function drawEvent({ x, y, title, subtitle, time }) {
+      const titleSize = title.length > 25 ? SETTINGS.titleSizeSmall : SETTINGS.titleSizeBig;
+
+      const container = new createjs.Container();
+      const titleText = new createjs.Text(title, `bold ${titleSize}px Arial`, '#174EB4');
+      const subtitleText = new createjs.Text(subtitle, 'normal 35px Arial', '#174EB4');
+      const timeText = new createjs.Text(time, 'normal 30px Arial', '#174EB4');
+
+      container.x = x;
+      container.y = y;
+
+      titleText.x = 0;
+      titleText.y = 0;
+      titleText.lineHeight = 44;
+      titleText.lineWidth = 635;
+
+      timeText.x = - timeText.getBounds().width - SETTINGS.titleTimeGap;
+      timeText.y = 2;
+
+      const titleBounds = titleText.getBounds();
+      const subtitleTextBounds = titleText.getBounds();
+
+      subtitleText.x = titleText.x;
+      subtitleText.y = titleText.y + titleBounds.height + SETTINGS.titleSubtitleGap;
+
+      container.addChild(titleText);
+      container.addChild(subtitleText);
+      container.addChild(timeText);
+      stage.addChild(container);
+
+      return container
+    }
+
+    function draw() {
+      const background = new createjs.Shape();
+          background.graphics.beginFill('white');
+          background.graphics.drawRect(0, 0, 1280, 720);
+          background.graphics.endFill();
+
+      stage.addChild(background);
+
+      const event1 = drawEvent({
+        x: SETTINGS.eventsHorizontalPosition,
+        y: SETTINGS.border,
+        title: 'Creating a New Framework for Algorithmic Art',
+        subtitle: 'James Porter',
+        time: '19:15'
+      });
+
+      const event2 = drawEvent({
+        x: SETTINGS.eventsHorizontalPosition,
+        y: 200,
+        title: 'Live Video Performances:\nWhere to Begin',
+        subtitle: 'Masha Rozhnova',
+        time: '19:45'
+      });
+
+      const event3 = drawEvent({
+        x: SETTINGS.eventsHorizontalPosition,
+        y: 400,
+        title: 'Scroll up! Scroll up! Adventures in accessible storytelling',
+        subtitle: 'Becky Rush',
+        time: '20:15'
+      });
+
+      const event4 = drawEvent({
+        x: SETTINGS.eventsHorizontalPosition,
+        y: 720,
+        title: 'Pub!',
+        subtitle: '@ The Phoenix - W1G 0PP',
+        time: '20:45'
+      });
+
+      event4.y = 720 - event4.getBounds().height - SETTINGS.border;
+
+      distributeContainersVertically([event1, event2, event3, event4]);
+
+      stage.update();
+    }
+
+    draw();
+  </script>
+</body>
+</html>
