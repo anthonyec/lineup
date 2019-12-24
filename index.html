@@ -7,6 +7,32 @@
   <title>LCC - Title Slide Generator</title>
 
   <style>
+    @font-face {
+        font-family: 'Avenir LT Std';
+        src: url('assets/fonts/AvenirLTStd-Black.woff2') format('woff2'),
+            url('assets/fonts/AvenirLTStd-Black.woff') format('woff');
+        font-weight: 800;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'Avenir LT Std';
+        src: url('assets/fonts/AvenirLTStd-Medium.woff2') format('woff2'),
+            url('assets/fonts/AvenirLTStd-Medium.woff') format('woff');
+        font-weight: 500;
+        font-style: normal;
+    }
+
+    @font-face {
+        font-family: 'Avenir LT Std';
+        src: url('assets/fonts/AvenirLTStd-Heavy.woff2') format('woff2'),
+            url('assets/fonts/AvenirLTStd-Heavy.woff') format('woff');
+        font-weight: 900;
+        font-style: normal;
+    }
+  </style>
+
+  <style>
     *, *:before, *:after {
       box-sizing: border-box;
       font-family: sans-serif;
@@ -204,7 +230,34 @@
       eventGap: 30,
       titleTimeGap: 35,
       eventsHorizontalPosition: 520,
-      border: 60
+      border: 60,
+      textColor: '#174EB4',
+      backgroundColor: 'white'
+    };
+
+    const state = {
+      events: [
+        {
+          title: 'Creating a New Framework for Algorithmic Art',
+          subtitle: 'James Porter',
+          time: '19:15'
+        },
+        {
+          title: 'Live Video Performances:\nWhere to Begin',
+          subtitle: 'Masha Rozhnova',
+          time: '19:45'
+        },
+        {
+          title: 'Scroll up! Scroll up! Adventures in accessible storytelling',
+          subtitle: 'Becky Rush',
+          time: '20:15'
+        },
+        {
+          title: 'Pub!',
+          subtitle: '@ The Phoenix - W1G 0PP',
+          time: '20:45'
+        },
+      ]
     };
 
     $canvas.width = 1280 * 3;
@@ -248,9 +301,9 @@
       const titleSize = title.length > 25 ? SETTINGS.titleSizeSmall : SETTINGS.titleSizeBig;
 
       const container = new createjs.Container();
-      const titleText = new createjs.Text(title, `bold ${titleSize}px Arial`, '#174EB4');
-      const subtitleText = new createjs.Text(subtitle, 'normal 35px Arial', '#174EB4');
-      const timeText = new createjs.Text(time, 'normal 30px Arial', '#174EB4');
+      const titleText = new createjs.Text(title, `bold ${titleSize}px Avenir LT Std`, SETTINGS.textColor);
+      const subtitleText = new createjs.Text(subtitle, '35px Avenir LT Std', SETTINGS.textColor);
+      const timeText = new createjs.Text(time, 'normal 30px Avenir LT Std', SETTINGS.textColor);
 
       container.x = x;
       container.y = y;
@@ -279,47 +332,25 @@
 
     function draw() {
       const background = new createjs.Shape();
-          background.graphics.beginFill('white');
+          background.graphics.beginFill(SETTINGS.backgroundColor);
           background.graphics.drawRect(0, 0, 1280, 720);
           background.graphics.endFill();
 
       stage.addChild(background);
 
-      const event1 = drawEvent({
-        x: SETTINGS.eventsHorizontalPosition,
-        y: SETTINGS.border,
-        title: 'Creating a New Framework for Algorithmic Art',
-        subtitle: 'James Porter',
-        time: '19:15'
+      const events = state.events.map(({ title, subtitle, time }) => {
+        return drawEvent({
+          x: SETTINGS.eventsHorizontalPosition,
+          y: SETTINGS.border,
+          title,
+          subtitle,
+          time
+        });
       });
 
-      const event2 = drawEvent({
-        x: SETTINGS.eventsHorizontalPosition,
-        y: 200,
-        title: 'Live Video Performances:\nWhere to Begin',
-        subtitle: 'Masha Rozhnova',
-        time: '19:45'
-      });
+      events[events.length - 1].y = 720 - events[events.length - 1].getBounds().height - SETTINGS.border;
 
-      const event3 = drawEvent({
-        x: SETTINGS.eventsHorizontalPosition,
-        y: 400,
-        title: 'Scroll up! Scroll up! Adventures in accessible storytelling',
-        subtitle: 'Becky Rush',
-        time: '20:15'
-      });
-
-      const event4 = drawEvent({
-        x: SETTINGS.eventsHorizontalPosition,
-        y: 720,
-        title: 'Pub!',
-        subtitle: '@ The Phoenix - W1G 0PP',
-        time: '20:45'
-      });
-
-      event4.y = 720 - event4.getBounds().height - SETTINGS.border;
-
-      distributeContainersVertically([event1, event2, event3, event4]);
+      distributeContainersVertically(events);
 
       stage.update();
     }
