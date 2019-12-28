@@ -1,4 +1,10 @@
 <script>
+  import { onMount, afterUpdate } from 'svelte';
+
+  import Canvas from './canvas.svelte';
+
+  let canvas;
+
   let events = [
     {
       title: 'Creating a New Framework for Algorithmic Art',
@@ -22,6 +28,10 @@
     }
   ];
 </script>
+
+<Canvas
+  events={events}
+/>
 
 {#each events as { title, subtitle, time }, i}
   <section class="setting-group">
