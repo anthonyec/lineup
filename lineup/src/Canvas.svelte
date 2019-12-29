@@ -1,3 +1,10 @@
+<style>
+  canvas {
+    border: 1px solid black;
+    width: 100%;
+  }
+</style>
+
 <script>
   import { onMount, afterUpdate } from 'svelte';
   import { Stage, Shape, Text, Container } from "@createjs/easeljs";
@@ -84,7 +91,7 @@
 
   function draw() {
     const background = new Shape();
-      background.graphics.beginFill('red');
+      background.graphics.beginFill(SETTINGS.backgroundColor);
       background.graphics.drawRect(0, 0, 1280, 720);
       background.graphics.endFill();
 

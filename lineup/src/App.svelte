@@ -29,44 +29,57 @@
   ];
 </script>
 
-<Canvas
-  events={events}
-/>
+<div class="app">
+  <div class="view canvas-view">
+    <Canvas
+      events={events}
+    />
+  </div>
 
-{#each events as { title, subtitle, time }, i}
-  <section class="setting-group">
-    <div class="field">
-      <label class="field__label" for="field-title-{i}">Title</label>
-      <input type="text" class="textfield field__input" id="field-title-{i}" value="{title}" bind:value={title}>
-    </div>
+  <div class="view settings-view">
+    {#each events as { title, subtitle, time }, i}
+      <section class="setting-group">
+        <div class="field">
+          <label class="field__label" for="field-title-{i}">Title</label>
+          <input type="text" class="textfield field__input" id="field-title-{i}" value="{title}" bind:value={title}>
+        </div>
 
-    <div class="field">
-      <label class="field__label" for="field-subtitle-{i}">Subtitle</label>
-      <input type="text" class="textfield field__input" id="field-subtitle-{i}" value="{subtitle}" bind:value={subtitle}>
-    </div>
+        <div class="field">
+          <label class="field__label" for="field-subtitle-{i}">Subtitle</label>
+          <input type="text" class="textfield field__input" id="field-subtitle-{i}" value="{subtitle}" bind:value={subtitle}>
+        </div>
 
-    <div class="field">
-      <label class="field__label" for="field-time-{i}">Time</label>
-      <input type="time" class="textfield field__input" id="field-time-{i}" value="{time}" bind:value={time}>
-    </div>
-  </section>
-{/each}
-
-{JSON.stringify(events)}
+        <div class="field">
+          <label class="field__label" for="field-time-{i}">Time</label>
+          <input type="time" class="textfield field__input" id="field-time-{i}" value="{time}" bind:value={time}>
+        </div>
+      </section>
+    {/each}
+  </div>
+</div>
 
 <style>
-  main {
-    text-align: center;
-    padding: 1em;
-    max-width: 240px;
-    margin: 0 auto;
+  .app {
+    height: 100%;
+    display: flex;
   }
 
-  h1 {
-    color: #ff3e00;
-    text-transform: uppercase;
-    font-size: 4em;
-    font-weight: 100;
+  .view {
+    width: 100%;
+    height: 100%;
+    overflow: scroll;
+  }
+
+  .canvas-view {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .settings-view {
+    width: 400px;
+    padding: 15px;
+    flex-shrink: 0;
   }
 
   label {
