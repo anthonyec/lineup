@@ -7,18 +7,18 @@
 
   let events = [
     {
-      title: 'Creating a New Framework for Algorithmic Art',
-      subtitle: 'James Porter',
+      title: 'Plotting: The Joy of Analogue',
+      subtitle: 'James Carruthers',
       time: '19:15'
     },
     {
-      title: 'Live Video Performances:\nWhere to Begin',
-      subtitle: 'Masha Rozhnova',
+      title: 'The Non-Human Dances: An Exploration into Computational Performers',
+      subtitle: 'Amy Cartwright',
       time: '19:45'
     },
     {
-      title: 'Scroll up! Scroll up! Adventures in accessible storytelling',
-      subtitle: 'Becky Rush',
+      title: 'Drawing with Code\n- An Architectural Wandering',
+      subtitle: 'Jessica In',
       time: '20:15'
     },
     {
@@ -27,12 +27,16 @@
       time: '20:45'
     }
   ];
+
+  let position = 1;
+
 </script>
 
 <div class="app">
   <div class="view canvas-view">
     <Canvas
       events={events}
+      eventsPosition={position}
     />
   </div>
 
@@ -40,17 +44,17 @@
     {#each events as { title, subtitle, time }, i}
       <section class="setting-group">
         <div class="field">
-          <label class="field__label" for="field-title-{i}">Title</label>
+          <label for="field-title-{i}">Title</label>
           <input type="text" class="textfield field__input" id="field-title-{i}" value="{title}" bind:value={title}>
         </div>
 
         <div class="field">
-          <label class="field__label" for="field-subtitle-{i}">Subtitle</label>
+          <label for="field-subtitle-{i}">Subtitle</label>
           <input type="text" class="textfield field__input" id="field-subtitle-{i}" value="{subtitle}" bind:value={subtitle}>
         </div>
 
         <div class="field">
-          <label class="field__label" for="field-time-{i}">Time</label>
+          <label for="field-time-{i}">Time</label>
           <input type="time" class="textfield field__input" id="field-time-{i}" value="{time}" bind:value={time}>
         </div>
       </section>
@@ -71,6 +75,8 @@
   }
 
   .canvas-view {
+    background: gray;
+    padding: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -78,14 +84,32 @@
 
   .settings-view {
     width: 400px;
-    padding: 15px;
+    padding: 25px 15px;
     flex-shrink: 0;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .setting-group {
+    margin-bottom: 25px;
+  }
+
+  .setting-group:last-child {
+    margin-bottom: 0px;
+  }
+
+  .field {
+    margin-bottom: 12px;
+  }
+
+  .field:last-child {
+    margin-bottom: 12px;
   }
 
   label {
     color: #122741;
+    display: block;
     font-weight: 500;
-    padding: 12px 0;
+    padding: 5px 0;
   }
 
   input {
@@ -106,9 +130,22 @@
     outline: none;
   }
 
-  @media (min-width: 640px) {
-    main {
-      max-width: none;
+  @media (max-width: 800px) {
+    .app {
+      flex-direction: column;
+    }
+
+    .canvas-view {
+      flex-shrink: 0;
+      height: auto;
+      position: fixed;
+    }
+
+    .settings-view {
+      margin-top: 56.4%;
+      width: auto;
+      overflow: visible;
+      flex-shrink: 0;
     }
   }
 </style>

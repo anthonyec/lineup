@@ -1,29 +1,45 @@
 <style>
-  canvas {
-    border: 1px solid black;
+  .canvas {
+    position: relative;
+  }
+
+  .reference {
+    position: absolute;
     width: 100%;
+    opacity: 0;
+  }
+
+  canvas {
+    width: 100%;
+    margin: 0;
   }
 </style>
 
 <script>
   import { onMount, afterUpdate } from 'svelte';
-  import { Stage, Shape, Text, Container } from "@createjs/easeljs";
+  import { Stage, Shape, Text, Container, Bitmap } from "@createjs/easeljs";
 
   export let events;
+  export let eventsPosition;
 
   let canvas;
   let stage;
 
-  const SETTINGS = {
+  console.log(eventsPosition);
+
+ $: SETTINGS = {
     titleSizeSmall: 33,
     titleSizeBig: 35,
-    titleSubtitleGap: 15,
-    eventGap: 30,
+    titleSubtitleGap: 7,
     titleTimeGap: 35,
-    eventsHorizontalPosition: 520,
-    border: 60,
+    eventsHorizontalPosition: 598,
+    marginTop: 70,
+    marginLeft: 70,
+    marginRight: 70,
+    marginBottom: 62,
     textColor: '#174EB4',
-    backgroundColor: 'white'
+    backgroundColor: 'white',
+    scale: 3,
   };
 
   // https://github.com/wonderbit/sketch-distribute-layers/blob/master/Distribute.sketchplugin/Contents/Sketch/script.cocoascript
@@ -57,12 +73,12 @@
   };
 
   function drawEvent({ x, y, title, subtitle, time }) {
-    const titleSize = title.length > 25 ? SETTINGS.titleSizeSmall : SETTINGS.titleSizeBig;
+    const titleSize = title.length > 30 ? SETTINGS.titleSizeSmall : SETTINGS.titleSizeBig;
 
     const container = new Container();
     const titleText = new Text(title, `bold ${titleSize}px Avenir LT Std`, SETTINGS.textColor);
     const subtitleText = new Text(subtitle, '35px Avenir LT Std', SETTINGS.textColor);
-    const timeText = new Text(time, 'normal 30px Avenir LT Std', SETTINGS.textColor);
+    const timeText = new Text(time, 'bold 30px Avenir LT Std', SETTINGS.textColor);
 
     container.x = x;
     container.y = y;
@@ -72,7 +88,8 @@
     titleText.lineHeight = 44;
     titleText.lineWidth = 635;
 
-    timeText.x = - timeText.getBounds().width - SETTINGS.titleTimeGap;
+    const timeTextBounds = timeText.getBounds();
+    timeText.x = timeTextBounds ? (- timeText.getBounds().width) - SETTINGS.titleTimeGap : 0;
     timeText.y = 2;
 
     const titleBounds = titleText.getBounds();
@@ -97,24 +114,47 @@
 
     stage.addChild(background);
 
+    const logoImage = new Image();
+
+    logoImage.src = 'logo.png';
+
+    logoImage.onload = () => {
+      const logo = new Bitmap('logo.png');
+
+      logo.x = SETTINGS.marginTop;
+      logo.y = SETTINGS.marginLeft;
+
+      logo.scale = (100 / SETTINGS.scale) / 100;
+      stage.addChild(logo);
+      stage.update();
+    };
+
     const eventContainers = events.map(({ title, subtitle, time }) => {
       return drawEvent({
         x: SETTINGS.eventsHorizontalPosition,
-        y: SETTINGS.border,
+        y: SETTINGS.marginTop,
         title,
         subtitle,
         time
       });
     });
 
-    eventContainers[eventContainers.length - 1].y = 720 - eventContainers[eventContainers.length - 1].getBounds().height - SETTINGS.border;
+    eventContainers[eventContainers.length - 1].y = 720 - eventContainers[eventContainers.length - 1].getBounds().height - SETTINGS.marginBottom;
 
     distributeContainersVertically(eventContainers);
+
     stage.update();
   }
 
   onMount(() => {
     stage = new Stage(canvas);
+
+    canvas.width = 1280 * SETTINGS.scale;
+    canvas.height = 720 * SETTINGS.scale;
+
+    stage.scaleX = SETTINGS.scale;
+    stage.scaleY = SETTINGS.scale;
+
     stage.update();
   });
 
@@ -123,4 +163,7 @@
   });
 </script>
 
-<canvas bind:this={canvas} width={1280} height={720}></canvas>
+<div class="canvas">
+  <img class="reference" src="reference.jpg" alt="Reference image">
+  <canvas bind:this={canvas}></canvas>
+</div>
